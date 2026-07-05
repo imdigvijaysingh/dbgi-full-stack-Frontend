@@ -155,11 +155,11 @@ const Courses = () => {
 
             <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-[30px]">
               {courses.map((course) => (
-                <div key={course.id} className="bg-white rounded-[10px] overflow-hidden shadow-[0_5px_15px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-[10px] hover:shadow-[0_15px_30px_rgba(0,0,0,0.1)] group">
-                  <div className="h-[200px] overflow-hidden bg-[#e2e8f0]">
+                <div key={course.id} className="bg-white rounded-[10px] overflow-hidden shadow-[0_5px_15px_rgba(0,0,0,0.05)] transition-all duration-300 hover:-translate-y-[10px] hover:shadow-[0_15px_30px_rgba(0,0,0,0.1)] group flex flex-col h-full">
+                  <div className="h-[200px] overflow-hidden bg-[#e2e8f0] shrink-0">
                     <img src={course.image} alt={course.title} className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110" />
                   </div>
-                  <div className="p-[25px]">
+                  <div className="p-[25px] flex flex-col flex-1">
                     <h4 className="text-[1.5rem] text-[var(--color-primary)] mb-[10px]">{course.title}</h4>
                     <span className="text-[var(--color-secondary)] font-semibold mb-[15px] block">{course.duration}</span>
                     <p className="mb-[15px] text-[#666]">{course.description}</p>
@@ -168,11 +168,11 @@ const Courses = () => {
                         <li key={index} className="py-[5px] relative pl-[25px] before:content-['✓'] before:absolute before:left-0 before:text-[var(--color-accent)] before:font-bold">{feature}</li>
                       ))}
                     </ul>
-                    <div className="flex gap-[10px]">
-                      <Button to={`/pages/course/${course.slug}`} className="flex-1 text-center whitespace-nowrap !bg-transparent !bg-none !shadow-none !text-red-600 hover:!text-red-700 border border-red-600 hover:bg-red-50">
+                    <div className="flex gap-[10px] mt-auto pt-[20px]">
+                      <Button to={`/pages/course/${course.slug}`} className="flex-1 text-center whitespace-nowrap !bg-transparent !bg-none !shadow-none !text-red-600 hover:!text-red-700 border-2 border-red-600 hover:bg-red-50">
                         View Details
                       </Button>
-                      <Button to="/pages/admission/" className="flex-1 text-center whitespace-nowrap !bg-transparent !bg-none !shadow-none !text-red-600 hover:!text-red-700 border border-red-600 hover:bg-red-50">
+                      <Button to="/pages/admission/" className="flex-1 text-center whitespace-nowrap !bg-transparent !bg-none !shadow-none !text-red-600 hover:!text-red-700 border-2 border-red-600 hover:bg-red-50">
                         Apply Now
                       </Button>
                     </div>
