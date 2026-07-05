@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../../components/common/Toast';
 import GlobalLoader from '../../components/common/GlobalLoader';
@@ -13,6 +13,15 @@ const StudentLogin = () => {
   const [toast, setToast] = useState(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    if (location.state?.toastMessage) {
+      showToast(location.state.toastMessage, location.state.toastType || 'success');
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
 
   const handleBackToWebsite = (e) => {
     e.preventDefault();
@@ -30,8 +39,7 @@ const StudentLogin = () => {
       setLoading(true);
       const { data } = await axios.post('/api/v1/students/login', { studentId, password });
       localStorage.setItem('studentToken', data.token);
-      showToast('Login Successful', 'success');
-      setTimeout(() => navigate('/erp/dashboard'), 1500);
+      setTimeout(() => navigate('/erp/dashboard', { state: { toastMessage: 'Login Successful', toastType: 'success' } }), 1500);
     } catch (error) {
       showToast(error.response?.data?.message || 'Invalid credentials', 'error');
     } finally {

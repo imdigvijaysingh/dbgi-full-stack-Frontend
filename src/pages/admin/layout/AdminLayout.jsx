@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import TopNavbar from '../components/TopNavbar';
 import Toast from '../../../components/common/Toast';
@@ -11,6 +11,14 @@ const AdminLayout = () => {
   const [toast, setToast] = useState(null); // { message, type }
   const [isGlobalLoading, setIsGlobalLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Loading...');
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.toastMessage) {
+      setToast({ message: location.state.toastMessage, type: location.state.toastType || 'success' });
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   useEffect(() => {
     if (localStorage.getItem('isAdminLoggedIn') !== 'true') {

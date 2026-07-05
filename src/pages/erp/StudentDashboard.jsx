@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../../components/common/Toast';
 import ProfileImageCropper from '../../components/ProfileImageCropper';
@@ -25,10 +25,19 @@ const StudentDashboard = () => {
   
   const [toast, setToast] = useState(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   
   const navigate = useNavigate();
+  const location = useLocation();
 
   const showToast = (message, type = 'success') => setToast({ message, type });
+
+  useEffect(() => {
+    if (location.state?.toastMessage) {
+      showToast(location.state.toastMessage, location.state.toastType || 'success');
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -80,9 +89,11 @@ const StudentDashboard = () => {
   }, [profile]);
 
   const handleLogout = () => {
-    localStorage.removeItem('studentToken');
-    showToast('Logged out successfully', 'success');
-    setTimeout(() => navigate('/erp/login'), 1500);
+    setIsLoggingOut(true);
+    setTimeout(() => {
+      localStorage.removeItem('studentToken');
+      navigate('/erp/login', { state: { toastMessage: 'Logged out successfully', toastType: 'success' } });
+    }, 1500);
   };
 
   const handleBackToWebsite = (e) => {
@@ -772,6 +783,7 @@ const StudentDashboard = () => {
         />
       )}
       {isRedirecting && <RedirectOverlay />}
+      {isLoggingOut && <RedirectOverlay message="Logging out..." />}
     </div>
   );
 };

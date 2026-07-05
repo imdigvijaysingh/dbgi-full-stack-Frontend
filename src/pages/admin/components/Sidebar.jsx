@@ -4,12 +4,16 @@ import RedirectOverlay from '../../../components/common/RedirectOverlay';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('cms_token');
-    localStorage.removeItem('isAdminLoggedIn');
-    navigate('/admin/login');
+    setIsLoggingOut(true);
+    setTimeout(() => {
+      localStorage.removeItem('cms_token');
+      localStorage.removeItem('isAdminLoggedIn');
+      navigate('/admin/login', { state: { toastMessage: 'Logged out successfully', toastType: 'success' } });
+    }, 1500);
   };
 
   const handleBackToWebsite = (e) => {
@@ -103,6 +107,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       </aside>
       
       {isRedirecting && <RedirectOverlay />}
+      {isLoggingOut && <RedirectOverlay message="Logging out..." />}
     </>
   );
 };

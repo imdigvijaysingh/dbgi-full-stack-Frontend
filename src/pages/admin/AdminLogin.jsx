@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../../utils/api';
 import GlobalLoader from '../../components/common/GlobalLoader';
 import RedirectOverlay from '../../components/common/RedirectOverlay';
+import Toast from '../../components/common/Toast';
 
 const AdminLogin = () => {
   const [username, setUsername] = useState(import.meta.env.DEV ? 'admin@dbgi.in' : '');
@@ -11,7 +12,18 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [toast, setToast] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const showToast = (message, type = 'success') => setToast({ message, type });
+
+  React.useEffect(() => {
+    if (location.state?.toastMessage) {
+      showToast(location.state.toastMessage, location.state.toastType || 'success');
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const handleBackToWebsite = (e) => {
     e.preventDefault();
@@ -31,7 +43,9 @@ const AdminLogin = () => {
       localStorage.setItem('cms_token', res.data.token);
       localStorage.setItem('adminUsername', res.data.user.username);
       
-      navigate('/admin/dashboard');
+      setTimeout(() => {
+        navigate('/admin/dashboard', { state: { toastMessage: 'Login successful!', toastType: 'success' } });
+      }, 1500);
     } catch (err) {
       setError(err.response?.data?.error || 'Invalid credentials');
       setIsLoading(false);
@@ -88,6 +102,13 @@ const AdminLogin = () => {
           </button>
         </p>
       </div>
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
       {isLoading && <GlobalLoader message="Logging in..." />}
       {isRedirecting && <RedirectOverlay />}
     </div>

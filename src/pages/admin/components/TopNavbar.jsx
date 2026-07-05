@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import GlobalLoader from '../../../components/common/GlobalLoader';
+import RedirectOverlay from '../../../components/common/RedirectOverlay';
 import api from '../../../utils/api';
 
 const TopNavbar = ({ toggleSidebar }) => {
@@ -21,9 +22,9 @@ const TopNavbar = ({ toggleSidebar }) => {
     setTimeout(() => {
       localStorage.removeItem('isAdminLoggedIn');
       localStorage.removeItem('cms_token');
-      navigate('/admin/login');
+      navigate('/admin/login', { state: { toastMessage: 'Logged out successfully', toastType: 'success' } });
       setIsLoading(false);
-    }, 800); // Small delay to show loader
+    }, 1500); // Wait for overlay
   };
 
   return (
@@ -85,7 +86,7 @@ const TopNavbar = ({ toggleSidebar }) => {
           )}
         </div>
       </div>
-      {isLoading && <GlobalLoader message="Logging out..." />}
+      {isLoading && <RedirectOverlay message="Logging out..." />}
     </header>
   );
 };
