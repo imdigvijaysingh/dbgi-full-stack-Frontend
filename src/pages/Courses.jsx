@@ -169,7 +169,7 @@ const Courses = () => {
                       ))}
                     </ul>
                     <div className="flex gap-[10px] mt-auto pt-[20px] w-full justify-center">
-                      <Button to={`/pages/course/${course.slug}`} className="flex-1 text-center whitespace-nowrap !px-2 !bg-transparent !bg-none !shadow-none !text-red-600 hover:!text-red-700 border-2 border-solid border-red-600 hover:bg-red-50">
+                      <Button to={`/pages/course/${course.slug}`} className="flex-1 text-center whitespace-nowrap !px-2 !bg-red-600 !bg-none !shadow-none !text-white hover:!bg-red-700 border-2 border-solid border-red-600">
                         View Details
                       </Button>
                       <Button to="/pages/admission/" className="flex-1 text-center whitespace-nowrap !px-2 !bg-transparent !bg-none !shadow-none !text-red-600 hover:!text-red-700 border-2 border-solid border-red-600 hover:bg-red-50">
