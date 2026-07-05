@@ -12,6 +12,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   const navItems = [
     { name: 'Dashboard', path: '/admin/dashboard', icon: 'fa-table-columns' },
+    { name: 'Classes', path: '/admin/classes', icon: 'fa-graduation-cap' },
     { name: 'Testimonials', path: '/admin/testimonials', icon: 'fa-comments' },
     { name: 'Affiliations', path: '/admin/affiliations', icon: 'fa-award' },
     { name: 'Students (ERP)', path: '/admin/students', icon: 'fa-user-graduate' },

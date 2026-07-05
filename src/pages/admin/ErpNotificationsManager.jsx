@@ -10,6 +10,22 @@ const ErpNotificationsManager = () => {
     targetType: 'all',
     targetId: ''
   });
+  const [classesList, setClassesList] = useState([]);
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const token = localStorage.getItem('cms_token');
+        const { data } = await axios.get('/api/v1/classes', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setClassesList(data.data.filter(c => c.isActive));
+      } catch (error) {
+        console.error('Failed to fetch classes');
+      }
+    };
+    fetchClasses();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,7 +86,24 @@ const ErpNotificationsManager = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {formData.targetType === 'class' ? 'Class Name' : 'Student ID'}
             </label>
-            <input type="text" name="targetId" value={formData.targetId} onChange={handleChange} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder={`Enter ${formData.targetType === 'class' ? 'Class Name' : 'Student ID'}`} required />
+            {formData.targetType === 'class' ? (
+              <select
+                name="targetId"
+                value={formData.targetId}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+              >
+                <option value="">Select a class...</option>
+                {classesList.map(c => (
+                  <option key={c._id} value={`${c.courseName} - ${c.semester}`}>
+                    {c.courseName} - {c.semester}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input type="text" name="targetId" value={formData.targetId} onChange={handleChange} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Enter Student ID" required />
+            )}
           </div>
         )}
 

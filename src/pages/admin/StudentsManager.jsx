@@ -5,6 +5,7 @@ import DragDropUpload from '../../components/common/DragDropUpload';
 
 const StudentsManager = () => {
   const [students, setStudents] = useState([]);
+  const [classesList, setClassesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -49,7 +50,20 @@ const StudentsManager = () => {
     }
   };
 
+  const fetchClasses = async () => {
+    try {
+      const token = localStorage.getItem('cms_token');
+      const { data } = await axios.get('/api/v1/classes', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setClassesList(data.data.filter(c => c.isActive));
+    } catch (error) {
+      console.error('Failed to fetch classes');
+    }
+  };
+
   useEffect(() => {
+    fetchClasses();
     fetchStudents();
   }, []);
 
@@ -76,6 +90,28 @@ const StudentsManager = () => {
       setCurrentStudent({
         ...currentStudent,
         [name]: type === 'checkbox' ? checked : value
+      });
+    }
+  };
+
+  const handleClassSelect = (e) => {
+    const selectedId = e.target.value;
+    if (!selectedId) {
+      setCurrentStudent({
+        ...currentStudent,
+        currentClass: { ...currentStudent.currentClass, className: '', semester: '' }
+      });
+      return;
+    }
+    const selectedClass = classesList.find(c => c._id === selectedId);
+    if (selectedClass) {
+      setCurrentStudent({
+        ...currentStudent,
+        currentClass: {
+          ...currentStudent.currentClass,
+          className: selectedClass.courseName,
+          semester: selectedClass.semester
+        }
       });
     }
   };
@@ -407,28 +443,23 @@ const StudentsManager = () => {
                   <h3 className="text-lg font-semibold mb-4 border-b pb-2">Academic Details</h3>
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Course / Class Name</label>
-                      <input
-                        type="text"
-                        name="className"
-                        placeholder="e.g. B.Tech CSE"
-                        value={currentStudent.currentClass.className}
-                        onChange={handleInputChange}
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Target Class</label>
+                      <select
                         required
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Semester / Year</label>
-                      <input
-                        type="text"
-                        name="semester"
-                        placeholder="e.g. 5th Semester"
-                        value={currentStudent.currentClass.semester}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
+                        value={classesList.find(c => c.courseName === currentStudent.currentClass.className && c.semester === currentStudent.currentClass.semester)?._id || ''}
+                        onChange={handleClassSelect}
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                      >
+                        <option value="">Select a class...</option>
+                        {classesList.map(c => (
+                          <option key={c._id} value={c._id}>
+                            {c.courseName} - {c.semester}
+                          </option>
+                        ))}
+                      </select>
+                      {(!classesList || classesList.length === 0) && (
+                        <p className="text-xs text-red-500 mt-1">No active classes found. Please add them in the Classes Manager.</p>
+                      )}
                     </div>
 
                     <div className="mt-6">

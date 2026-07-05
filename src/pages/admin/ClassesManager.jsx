@@ -2,56 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import api from '../../utils/api';
 
-const Users = () => {
+const ClassesManager = () => {
   const { showToast, showLoading, hideLoading } = useOutletContext();
-  const [users, setUsers] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    role: 'admin'
+    courseName: '',
+    semester: '',
+    isActive: true
   });
   const [editingId, setEditingId] = useState(null);
 
   useEffect(() => {
-    fetchUsers();
+    fetchClasses();
   }, []);
 
-  const fetchUsers = async () => {
+  const fetchClasses = async () => {
     try {
-      const res = await api.get('/users');
+      const res = await api.get('/classes');
       if (res.data.success) {
-        setUsers(res.data.data);
+        setClasses(res.data.data);
       }
     } catch (error) {
-      showToast('Failed to fetch admin users', 'error');
+      showToast('Failed to fetch classes', 'error');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleOpenModal = (user = null) => {
-    if (user) {
-      setIsEditing(true);
-      setEditingId(user._id);
+  const handleOpenModal = (cls = null) => {
+    if (cls) {
+      setEditingId(cls._id);
       setFormData({
-        username: user.username,
-        email: user.email,
-        password: '', // blank by default for edit
-        role: user.role || 'admin'
+        courseName: cls.courseName,
+        semester: cls.semester,
+        isActive: cls.isActive
       });
     } else {
-      setIsEditing(false);
       setEditingId(null);
       setFormData({
-        username: '',
-        email: '',
-        password: '',
-        role: 'admin'
+        courseName: '',
+        semester: '',
+        isActive: true
       });
     }
     setIsModalOpen(true);
@@ -63,31 +56,26 @@ const Users = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isEditing && !formData.password) {
-      return showToast('Password is required for new users', 'error');
-    }
-
-    showLoading(isEditing ? 'Updating user...' : 'Creating user...');
+    showLoading(editingId ? 'Updating class...' : 'Creating class...');
     try {
-      const payload = { ...formData };
-      if (isEditing && !payload.password) {
-        delete payload.password; // Don't send empty password if editing
-      }
-
-      if (isEditing) {
-        await api.put(`/users/${editingId}`, payload);
-        showToast('User updated successfully');
+      if (editingId) {
+        await api.put(`/classes/${editingId}`, formData);
+        showToast('Class updated successfully');
       } else {
-        await api.post('/users', payload);
-        showToast('User created successfully');
+        await api.post('/classes', formData);
+        showToast('Class created successfully');
       }
       handleCloseModal();
-      fetchUsers();
+      fetchClasses();
     } catch (error) {
       showToast(error.response?.data?.error || 'Operation failed', 'error');
     } finally {
@@ -96,14 +84,14 @@ const Users = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this admin user? This action cannot be undone.')) {
-      showLoading('Deleting user...');
+    if (window.confirm('Are you sure you want to delete this class?')) {
+      showLoading('Deleting class...');
       try {
-        await api.delete(`/users/${id}`);
-        showToast('User deleted successfully');
-        fetchUsers();
+        await api.delete(`/classes/${id}`);
+        showToast('Class deleted successfully');
+        fetchClasses();
       } catch (error) {
-        showToast(error.response?.data?.error || 'Failed to delete user', 'error');
+        showToast('Failed to delete class', 'error');
       } finally {
         hideLoading();
       }
@@ -114,14 +102,14 @@ const Users = () => {
     <div className="animate-[modalFadeIn_0.3s_ease]">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Admin Users Management</h1>
-          <p className="text-gray-500 text-sm">Manage CMS administrators and their credentials.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-1">Classes Manager</h1>
+          <p className="text-gray-500 text-sm">Create and manage classes used across the ERP modules.</p>
         </div>
         <button 
           onClick={() => handleOpenModal()}
           className="bg-[#fe0b00] text-white px-5 py-2.5 rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center gap-2 whitespace-nowrap shadow-sm hover:shadow"
         >
-          <i className="fas fa-user-plus"></i> Add Admin
+          <i className="fas fa-plus"></i> Add New Class
         </button>
       </div>
 
@@ -129,54 +117,56 @@ const Users = () => {
         {isLoading ? (
           <div className="p-8 text-center text-gray-500">
             <i className="fas fa-circle-notch fa-spin text-2xl mb-2"></i>
-            <p>Loading users...</p>
+            <p>Loading classes...</p>
           </div>
-        ) : users.length === 0 ? (
+        ) : classes.length === 0 ? (
           <div className="p-12 text-center">
             <div className="w-16 h-16 bg-red-50 text-[#fe0b00] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-              <i className="fas fa-users"></i>
+              <i className="fas fa-graduation-cap"></i>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No Users Found</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">No Classes Found</h3>
+            <p className="text-gray-500 mb-4">You haven't added any classes yet.</p>
+            <button 
+              onClick={() => handleOpenModal()}
+              className="text-[#fe0b00] font-medium hover:underline"
+            >
+              Add your first class
+            </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="p-4 font-semibold text-gray-600 text-sm">Username</th>
-                  <th className="p-4 font-semibold text-gray-600 text-sm">Email</th>
-                  <th className="p-4 font-semibold text-gray-600 text-sm">Role</th>
+                  <th className="p-4 font-semibold text-gray-600 text-sm">Course Name</th>
+                  <th className="p-4 font-semibold text-gray-600 text-sm">Semester / Year</th>
+                  <th className="p-4 font-semibold text-gray-600 text-sm">Status</th>
                   <th className="p-4 font-semibold text-gray-600 text-sm w-[150px]">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {users.map((user) => (
-                  <tr key={user._id} className="hover:bg-gray-50 transition-colors">
+                {classes.map((cls) => (
+                  <tr key={cls._id} className="hover:bg-gray-50 transition-colors">
                     <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex justify-center items-center font-bold text-sm">
-                          {user.username.charAt(0).toUpperCase()}
-                        </div>
-                        <span className="font-medium text-gray-900">{user.username}</span>
-                      </div>
+                      <div className="font-medium text-gray-900">{cls.courseName}</div>
                     </td>
-                    <td className="p-4 text-gray-600">{user.email || 'N/A'}</td>
+                    <td className="p-4 text-gray-600">{cls.semester}</td>
                     <td className="p-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 capitalize">
-                        {user.role || 'Admin'}
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${cls.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                        {cls.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </td>
                     <td className="p-4">
                       <div className="flex gap-2">
                         <button 
-                          onClick={() => handleOpenModal(user)}
+                          onClick={() => handleOpenModal(cls)}
                           className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center hover:bg-blue-100 transition-colors"
                           title="Edit"
                         >
                           <i className="fas fa-edit"></i>
                         </button>
                         <button 
-                          onClick={() => handleDelete(user._id)}
+                          onClick={() => handleDelete(cls._id)}
                           className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center hover:bg-red-100 transition-colors"
                           title="Delete"
                         >
@@ -197,7 +187,7 @@ const Users = () => {
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-[modalSlideUp_0.3s_ease]">
             <div className="p-5 sm:p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
               <h2 className="text-xl font-bold text-gray-900">
-                {isEditing ? 'Edit Admin User' : 'Add New Admin'}
+                {editingId ? 'Edit Class' : 'Add New Class'}
               </h2>
               <button onClick={handleCloseModal} className="text-gray-400 hover:text-gray-600 transition-colors">
                 <i className="fas fa-times text-xl"></i>
@@ -207,42 +197,41 @@ const Users = () => {
             <form onSubmit={handleSubmit} className="p-5 sm:p-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Username *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Course Name *</label>
                   <input
                     type="text"
-                    name="username"
-                    value={formData.username}
+                    name="courseName"
+                    value={formData.courseName}
                     onChange={handleChange}
                     className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#fe0b00] focus:border-[#fe0b00] outline-none"
-                    placeholder="e.g. admin_johndoe"
+                    placeholder="e.g. B.Tech CSE"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Semester / Year *</label>
                   <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    type="text"
+                    name="semester"
+                    value={formData.semester}
                     onChange={handleChange}
                     className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#fe0b00] focus:border-[#fe0b00] outline-none"
-                    placeholder="e.g. john@example.com"
+                    placeholder="e.g. 6th Sem"
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password {isEditing ? <span className="text-xs text-gray-400 font-normal">(Leave blank to keep current)</span> : '*'}
+                <div className="flex items-center gap-2 pt-2">
+                  <input
+                    type="checkbox"
+                    name="isActive"
+                    id="isActive"
+                    checked={formData.isActive}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-[#fe0b00] rounded focus:ring-[#fe0b00]"
+                  />
+                  <label htmlFor="isActive" className="text-sm font-medium text-gray-700 cursor-pointer">
+                    Active Class
                   </label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#fe0b00] focus:border-[#fe0b00] outline-none"
-                    placeholder={isEditing ? 'Enter new password' : 'Enter a strong password'}
-                    required={!isEditing}
-                  />
                 </div>
               </div>
               
@@ -259,7 +248,7 @@ const Users = () => {
                   className="px-5 py-2.5 text-white bg-[#fe0b00] hover:bg-red-700 rounded-lg font-medium transition-colors flex items-center gap-2"
                 >
                   <i className="fas fa-save"></i>
-                  {isEditing ? 'Update User' : 'Create User'}
+                  {editingId ? 'Update Class' : 'Save Class'}
                 </button>
               </div>
             </form>
@@ -270,4 +259,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default ClassesManager;

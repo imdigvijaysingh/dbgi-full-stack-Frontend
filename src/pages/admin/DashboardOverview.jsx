@@ -7,6 +7,7 @@ const DashboardOverview = () => {
     testimonials: 0,
     notices: 0,
     media: 0,
+    totalUsers: 0,
   });
   const [activities, setActivities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -18,17 +19,23 @@ const DashboardOverview = () => {
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
-      const [noticesRes, testimonialsRes, mediaRes, activitiesRes] = await Promise.all([
+      const [noticesRes, testimonialsRes, mediaRes, activitiesRes, usersRes, studentsRes] = await Promise.all([
         api.get('/notices'),
         api.get('/testimonials'),
         api.get('/media'),
-        api.get('/activities')
+        api.get('/activities'),
+        api.get('/auth/users/count'),
+        api.get('/students')
       ]);
+
+      const adminsCount = usersRes.data.count || 0;
+      const studentsCount = studentsRes.data.length || 0;
 
       setStats({
         notices: noticesRes.data.count || 0,
         testimonials: testimonialsRes.data.count || 0,
-        media: mediaRes.data.count || 0
+        media: mediaRes.data.count || 0,
+        totalUsers: adminsCount + studentsCount
       });
 
       setActivities(activitiesRes.data.data || []);
@@ -64,11 +71,11 @@ const DashboardOverview = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center">
           <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-xl mr-4">
-            <i className="fas fa-eye"></i>
+            <i className="fas fa-users"></i>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Total Visitors</p>
-            <p className="text-2xl font-bold text-gray-900">12,450</p>
+            <p className="text-sm font-medium text-gray-500">Total Users</p>
+            <p className="text-2xl font-bold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
           </div>
         </div>
         

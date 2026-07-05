@@ -17,6 +17,7 @@ import AdminLayout from './pages/admin/layout/AdminLayout'
 import DashboardOverview from './pages/admin/DashboardOverview'
 import TestimonialsManager from './pages/admin/TestimonialsManager'
 import NoticesManager from './pages/admin/NoticesManager'
+import ClassesManager from './pages/admin/ClassesManager'
 import AffiliationsManager from './pages/admin/AffiliationsManager'
 import StudentsManager from './pages/admin/StudentsManager'
 import MediaLibrary from './pages/admin/MediaLibrary'
@@ -60,6 +61,7 @@ const App = () => {
         {/* Admin CMS Layout Routes */}
         <Route path='/admin' element={<AdminLayout />}>
           <Route path='dashboard' element={<DashboardOverview />} />
+          <Route path='classes' element={<ClassesManager />} />
           <Route path='testimonials' element={<TestimonialsManager />} />
           <Route path='notices' element={<NoticesManager />} />
           <Route path='affiliations' element={<AffiliationsManager />} />
