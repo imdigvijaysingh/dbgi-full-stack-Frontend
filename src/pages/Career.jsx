@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Hero from "../components/Hero";
-import IMG from "../assets/career/1.jpg";
+import IMG from "../assets/career/1.JPG";
 
 const Career = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
