@@ -25,7 +25,7 @@ const About = (
           <div className="flex items-center gap-[50px] max-lg:flex-col max-lg:gap-[25px] scroll-animation">
             <div className="flex-1">
               <h3 className="text-[clamp(1.5rem,3vw,2rem)] text-[var(--color-primary)] mb-[20px]">{contentHeading}</h3>
-              <p className="mb-[20px] max-lg:mb-0 leading-[1.6]">
+              <p className="mb-[20px] max-lg:mb-0 leading-[1.6] max-md:text-left text-justify">
                 {contentDescription}
               </p>
               {showButtons && (

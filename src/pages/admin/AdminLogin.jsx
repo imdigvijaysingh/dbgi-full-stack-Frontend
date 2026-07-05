@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../utils/api';
 import GlobalLoader from '../../components/common/GlobalLoader';
+import RedirectOverlay from '../../components/common/RedirectOverlay';
 
 const AdminLogin = () => {
   const [username, setUsername] = useState(import.meta.env.DEV ? 'admin@dbgi.in' : '');
@@ -9,7 +10,16 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
+
+  const handleBackToWebsite = (e) => {
+    e.preventDefault();
+    setIsRedirecting(true);
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -73,12 +83,13 @@ const AdminLogin = () => {
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-gray-500">
-          <a href="/" className="text-[#fe0b00] hover:text-red-700">
+          <button onClick={handleBackToWebsite} className="text-[#fe0b00] hover:text-red-700 bg-transparent border-none cursor-pointer">
             &larr; Back to Website
-          </a>
+          </button>
         </p>
       </div>
       {isLoading && <GlobalLoader message="Logging in..." />}
+      {isRedirecting && <RedirectOverlay />}
     </div>
   );
 };

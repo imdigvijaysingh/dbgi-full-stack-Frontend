@@ -31,6 +31,7 @@ import StudentDashboard from './pages/erp/StudentDashboard'
 import ErpNotificationsManager from './pages/admin/ErpNotificationsManager'
 import ErpAssignmentsManager from './pages/admin/ErpAssignmentsManager'
 import ErpStudyMaterialsManager from './pages/admin/ErpStudyMaterialsManager'
+import ErpAttendanceManager from './pages/admin/ErpAttendanceManager'
 
 const App = () => {
   return (
@@ -69,6 +70,7 @@ const App = () => {
           <Route path='erp-notifications' element={<ErpNotificationsManager />} />
           <Route path='erp-assignments' element={<ErpAssignmentsManager />} />
           <Route path='erp-study-materials' element={<ErpStudyMaterialsManager />} />
+          <Route path='erp-attendance' element={<ErpAttendanceManager />} />
           <Route path='media' element={<MediaLibrary />} />
           <Route path='users' element={<Users />} />
           <Route path='profile' element={<MyProfile />} />

@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../../components/common/Toast';
 import GlobalLoader from '../../components/common/GlobalLoader';
+import RedirectOverlay from '../../components/common/RedirectOverlay';
 
 const StudentLogin = () => {
   const [studentId, setStudentId] = useState(import.meta.env.DEV ? 'ds123' : '');
@@ -10,7 +11,16 @@ const StudentLogin = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
+
+  const handleBackToWebsite = (e) => {
+    e.preventDefault();
+    setIsRedirecting(true);
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
+  };
 
   const showToast = (message, type = 'success') => setToast({ message, type });
 
@@ -102,9 +112,9 @@ const StudentLogin = () => {
                   Sign up here
                 </Link>
               </p>
-              <Link to="/" className="text-blue-600 hover:text-blue-800 transition inline-block mt-2">
+              <button onClick={handleBackToWebsite} className="text-blue-600 hover:text-blue-800 transition inline-block mt-2 bg-transparent border-none cursor-pointer">
                 <i className="fas fa-arrow-left mr-1"></i> Back to Main Website
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -119,6 +129,7 @@ const StudentLogin = () => {
       )}
       
       {loading && <GlobalLoader message="Logging in..." />}
+      {isRedirecting && <RedirectOverlay />}
     </div>
   );
 };

@@ -1,13 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import RedirectOverlay from '../../../components/common/RedirectOverlay';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem('cms_token');
     localStorage.removeItem('isAdminLoggedIn');
     navigate('/admin/login');
+  };
+
+  const handleBackToWebsite = (e) => {
+    e.preventDefault();
+    setIsRedirecting(true);
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
   };
 
   const navItems = [
@@ -19,6 +29,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { name: 'ERP Notifications', path: '/admin/erp-notifications', icon: 'fa-bell' },
     { name: 'ERP Assignments', path: '/admin/erp-assignments', icon: 'fa-tasks' },
     { name: 'ERP Study Material', path: '/admin/erp-study-materials', icon: 'fa-book-open' },
+    { name: 'ERP Attendance', path: '/admin/erp-attendance', icon: 'fa-clipboard-user' },
     { name: 'Notice Board', path: '/admin/notices', icon: 'fa-bullhorn' },
     { name: 'Media Library', path: '/admin/media', icon: 'fa-images' },
     { name: 'Users', path: '/admin/users', icon: 'fa-users' },
@@ -77,10 +88,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         </div>
 
         <div className="p-4 border-t border-gray-100 flex flex-col gap-2">
-          <a href="/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors">
+          <button onClick={handleBackToWebsite} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors w-full text-left">
             <i className="fas fa-external-link-alt w-5 text-center"></i>
             <span>View Live Site</span>
-          </a>
+          </button>
           <button 
             onClick={handleLogout}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors w-full text-left"
@@ -90,6 +101,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           </button>
         </div>
       </aside>
+      
+      {isRedirecting && <RedirectOverlay />}
     </>
   );
 };

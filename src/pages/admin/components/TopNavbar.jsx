@@ -13,20 +13,7 @@ const TopNavbar = ({ toggleSidebar }) => {
   const adminUsername = localStorage.getItem('adminUsername') || 'Admin User';
 
   useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        const res = await api.get('/activities');
-        if (res.data && res.data.data) {
-          // Filter to show student update activities
-          const studentUpdates = res.data.data.filter(a => a.entity === 'Student Profile');
-          setActivities(studentUpdates);
-          setUnreadCount(studentUpdates.length);
-        }
-      } catch (err) {
-        console.error('Failed to fetch activities:', err);
-      }
-    };
-    fetchActivities();
+    // Unused
   }, []);
 
   const handleLogout = () => {
@@ -61,68 +48,11 @@ const TopNavbar = ({ toggleSidebar }) => {
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4">
-        <div className="relative">
-          <button 
-            onClick={() => {
-              setNotificationsOpen(!notificationsOpen);
-              if (!notificationsOpen) setUnreadCount(0);
-              setProfileOpen(false);
-            }}
-            className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative"
-          >
-            <i className="fas fa-bell"></i>
-            {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 w-4 h-4 bg-red-500 rounded-full text-white text-[10px] font-bold flex items-center justify-center border-2 border-white">
-                {unreadCount > 9 ? '9+' : unreadCount}
-              </span>
-            )}
-          </button>
-          
-          {notificationsOpen && (
-            <>
-              <div className="fixed inset-0 z-[1010]" onClick={() => setNotificationsOpen(false)}></div>
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-[0_5px_25px_rgba(0,0,0,0.15)] py-2 border border-gray-100 z-[1020] animate-[modalFadeIn_0.2s_ease]">
-                <div className="px-4 py-2 border-b border-gray-100 flex justify-between items-center mb-1">
-                  <h3 className="text-sm font-semibold text-gray-800">Notifications</h3>
-                  <span className="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">{activities.length} New</span>
-                </div>
-                <div className="max-h-80 overflow-y-auto">
-                  {activities.length > 0 ? (
-                    activities.map((activity, idx) => (
-                      <div key={idx} className="px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                        <div className="flex gap-3">
-                          <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i className="fas fa-user-edit text-xs"></i>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-800"><span className="font-medium">{activity.user}</span> updated their profile.</p>
-                            <p className="text-xs text-gray-500 mt-1">{new Date(activity.createdAt).toLocaleDateString()} {new Date(activity.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-4 py-6 text-center text-gray-500 text-sm">
-                      <i className="fas fa-bell-slash text-2xl text-gray-300 mb-2 block"></i>
-                      No new notifications
-                    </div>
-                  )}
-                </div>
-                <div className="px-4 py-2 border-t border-gray-100 mt-1 text-center">
-                  <Link to="/admin/dashboard" className="text-xs font-medium text-blue-600 hover:text-blue-800" onClick={() => setNotificationsOpen(false)}>
-                    View All Activity
-                  </Link>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-        
+
         <div className="relative">
           <button 
             onClick={() => {
               setProfileOpen(!profileOpen);
-              setNotificationsOpen(false);
             }}
             className="flex items-center gap-2 hover:bg-gray-100 p-1.5 rounded-lg transition-colors"
           >

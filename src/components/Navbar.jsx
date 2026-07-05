@@ -87,7 +87,9 @@ const Navbar = ({
         </div>
         <div className="flex items-center px-5 bg-transparent z-10 text-sm">
           <a
-            href="mailto:dbgi@dbgisre.edu.in"
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=dbgi@dbgisre.edu.in"
+            target="_blank"
+            rel="noopener noreferrer"
             aria-label="Email Us"
             className="flex items-center gap-1.5 text-white no-underline transition-colors duration-300 hover:text-[var(--color-accent)]"
           >
@@ -136,7 +138,7 @@ const Navbar = ({
 
           {/* Center: Nav Links */}
           <div
-            className="flex items-center justify-center shrink-0 max-lg:order-last max-lg:w-full"
+            className={`flex items-center justify-center shrink-0 max-lg:order-last max-lg:w-full ${!mobileMenuOpen ? 'max-lg:hidden' : ''}`}
             ref={navRef}
           >
 

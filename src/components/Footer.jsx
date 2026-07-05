@@ -41,6 +41,7 @@ const Footer = ({ subscribed, scrollToSection, handleNewsletterSubmit }) => {
               { pathName: "Campus Life", path: "/pages/campus-life" },
               { pathName: "Contact Us", path: "/pages/contact-us" },
               { pathName: "Career @DBGI", path: "/pages/career" },
+              { pathName: "Admin Portal", path: "/admin/login" },
             ].map((link, index) => (
               <Link key={index} to={link.path}>
                 {link.pathName}
@@ -111,26 +112,9 @@ const Footer = ({ subscribed, scrollToSection, handleNewsletterSubmit }) => {
           </div>
         </div>
 
-        <div className="flex justify-between items-center pt-[20px] border-t border-white/10 text-[0.9rem] text-[#999] mt-auto w-full">
-          <p className="m-0 text-left">
+        <div className="flex justify-center items-center pt-[20px] border-t border-white/10 text-[0.9rem] text-[#999] mt-auto w-full text-center">
+          <p className="m-0">
             &copy; {new Date().getFullYear()} DBGI SAHARANPUR
-          </p>
-          <Link
-            to="/admin/login"
-            className="text-[#999] hover:text-white ml-4 text-sm"
-          >
-            Admin Portal
-          </Link>
-          <p className="m-0 text-right">
-            Made by{" "}
-            <a
-              href="https://www.linkedin.com/in/digvijay-singh-pundir-12a628343/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white no-underline transition-all duration-300 hover:text-[var(--color-primary)]"
-            >
-              Digvijay Singh
-            </a>
           </p>
         </div>
       </div>

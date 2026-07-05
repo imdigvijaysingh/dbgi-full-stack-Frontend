@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../../components/common/Toast';
 import ProfileImageCropper from '../../components/ProfileImageCropper';
+import RedirectOverlay from '../../components/common/RedirectOverlay';
 
 const StudentDashboard = () => {
   const [profile, setProfile] = useState(null);
@@ -23,6 +24,7 @@ const StudentDashboard = () => {
   const [savingProfile, setSavingProfile] = useState(false);
   
   const [toast, setToast] = useState(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   
   const navigate = useNavigate();
 
@@ -81,6 +83,14 @@ const StudentDashboard = () => {
     localStorage.removeItem('studentToken');
     showToast('Logged out successfully', 'success');
     setTimeout(() => navigate('/erp/login'), 1500);
+  };
+
+  const handleBackToWebsite = (e) => {
+    e.preventDefault();
+    setIsRedirecting(true);
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
   };
 
   const handleEditProfile = () => {
@@ -683,6 +693,12 @@ const StudentDashboard = () => {
 
         <div className="p-4 border-t border-gray-100 shrink-0">
           <button 
+            onClick={handleBackToWebsite}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition text-sm font-bold mb-2"
+          >
+            <i className="fas fa-external-link-alt"></i> Back to Website
+          </button>
+          <button 
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition text-sm font-bold"
           >
@@ -755,6 +771,7 @@ const StudentDashboard = () => {
           onClose={() => setToast(null)} 
         />
       )}
+      {isRedirecting && <RedirectOverlay />}
     </div>
   );
 };
