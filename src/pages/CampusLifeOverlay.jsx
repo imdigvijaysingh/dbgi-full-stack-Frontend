@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../utils/api';
 import sports1 from '../assets/campus_life/sports.webp';
 import sports2 from '../assets/campus_life/sports-2.webp';
 import sports3 from '../assets/campus_life/sports-3.webp';
@@ -131,8 +132,21 @@ const CampusLife = ({ previewCount, showViewMore }) => {
   const [customPhotos, setCustomPhotos] = useState([]);
 
   useEffect(() => {
-    const savedPhotos = JSON.parse(localStorage.getItem('customCampusPhotos') || '[]');
-    setCustomPhotos(savedPhotos);
+    const fetchCustomPhotos = async () => {
+      try {
+        const res = await api.get('/media');
+        if (res.data && res.data.success) {
+          const formatted = res.data.data.map(m => ({
+            url: m.url,
+            categoryId: m.category
+          }));
+          setCustomPhotos(formatted);
+        }
+      } catch (error) {
+        console.error('Failed to fetch campus life photos', error);
+      }
+    };
+    fetchCustomPhotos();
   }, []);
   
   const campusCards = [

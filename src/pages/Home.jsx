@@ -23,6 +23,7 @@ const Home = () => {
   const [headerScrolled, setHeaderScrolled] = useState(false);
   const [noticeSlides, setNoticeSlides] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
+  const [featuredImage, setFeaturedImage] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,9 +31,13 @@ const Home = () => {
       try {
         const noticesRes = await axios.get("/api/v1/notices");
         const testimonialsRes = await axios.get("/api/v1/testimonials");
+        const mediaRes = await axios.get("/api/v1/media?category=home_featured");
         
         setNoticeSlides(noticesRes.data.data);
         setTestimonials(testimonialsRes.data.data);
+        if (mediaRes.data.data && mediaRes.data.data.length > 0) {
+          setFeaturedImage(mediaRes.data.data[0].url);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -249,6 +254,19 @@ const Home = () => {
         secondaryBtnLink="/pages/admission"
         singleLineTitle={true}
       />
+
+      {/* Featured Image Section */}
+      {featuredImage && (
+        <section className="pt-[40px] pb-[20px] bg-white flex justify-center w-full">
+          <div className="container px-[15px] md:px-[20px]">
+            <img 
+              src={featuredImage} 
+              alt="DBGI Featured Highlights" 
+              className="w-full max-w-[1200px] mx-auto rounded-[12px] shadow-[0_10px_30px_rgba(0,0,0,0.15)] object-cover" 
+            />
+          </div>
+        </section>
+      )}
 
       {/* About Section */}
       <About 

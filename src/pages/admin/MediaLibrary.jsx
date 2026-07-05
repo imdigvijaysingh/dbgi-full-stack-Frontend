@@ -133,6 +133,18 @@ const MediaLibrary = () => {
     }
   };
 
+  const handleUpdateCategory = async (id, newCategory) => {
+    try {
+      const res = await api.put(`/media/${id}`, { category: newCategory });
+      if (res.data.success) {
+        showToast('Category updated', 'success');
+        fetchMedia();
+      }
+    } catch (error) {
+      showToast('Failed to update category', 'error');
+    }
+  };
+
   return (
     <div className="animate-[modalFadeIn_0.3s_ease]">
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -261,6 +273,38 @@ const MediaLibrary = () => {
 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                           <p className="text-white text-xs truncate mb-2">{m.filename}</p>
+                          <select 
+                            value={m.category || 'general'} 
+                            onChange={(e) => handleUpdateCategory(m._id, e.target.value)}
+                            className="w-full text-xs p-1.5 border rounded outline-none cursor-pointer text-gray-800 bg-white mb-2"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <option value="general">General</option>
+                            <option value="home_featured">Home Page Featured</option>
+                            <optgroup label="Campus Life">
+                              <option value="sports">Sports Meet</option>
+                              <option value="alumni">Alumni Meetups</option>
+                              <option value="fresher">Freshers Party</option>
+                              <option value="industry_visit">Industrial Visits</option>
+                              <option value="tvaran">Tvaran Events</option>
+                              <option value="job">Job Fair</option>
+                              <option value="trip">Educational Trips</option>
+                              <option value="girl_game">Girls Competition</option>
+                              <option value="play">Nukkad Natak</option>
+                              <option value="star_night">Star Night</option>
+                              <option value="women_empower">Women Empowerment</option>
+                              <option value="farewell">Farewell Party</option>
+                              <option value="winners">Achievers</option>
+                              <option value="guest_visit">Guest Lectures</option>
+                              <option value="jagrukta">Awareness Programs</option>
+                              <option value="seminar">Seminars & Workshops</option>
+                              <option value="supportive_faculty">Supportive Faculty</option>
+                              <option value="yoga">Yoga & Wellness</option>
+                              <option value="lovely_faculty">Lovely Faculty</option>
+                              <option value="parents_felicitation">Parents Felicitation</option>
+                              <option value="moot_court">Moot Court</option>
+                            </optgroup>
+                          </select>
                           <a 
                             href={m.url} 
                             target="_blank" 
