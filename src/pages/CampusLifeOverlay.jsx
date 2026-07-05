@@ -130,6 +130,7 @@ const CampusLife = ({ previewCount, showViewMore }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [customPhotos, setCustomPhotos] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
     const fetchCustomPhotos = async () => {
@@ -383,19 +384,34 @@ const CampusLife = ({ previewCount, showViewMore }) => {
     }
   ];
 
+  // Extract unique categories from custom photos that aren't in campusCards
+  const customCategoryIds = [...new Set(customPhotos.map(p => p.categoryId))].filter(id => id && id !== 'general');
+  const newCards = customCategoryIds.filter(id => !campusCards.find(c => c.id === id)).map(id => ({
+    id,
+    title: id,
+    images: [],
+    description: `Pictures for ${id}`,
+    altTexts: []
+  }));
+
+  const allBaseCards = [...campusCards, ...newCards];
+
   // Merge custom photos into the categories
-  const finalCampusCards = campusCards.map(card => {
+  const finalCampusCards = allBaseCards.map(card => {
     const categoryCustomPhotos = customPhotos.filter(p => p.categoryId === card.id).map(p => p.url);
     return {
       ...card,
       images: [...categoryCustomPhotos, ...card.images]
     };
-  });
+  }).filter(card => card.images.length > 0);
+
+  const categories = ['All', ...finalCampusCards.map(card => card.title)];
+  const isPreview = !!previewCount;
 
   // Open modal with specific card
-  const openModal = (index) => {
-    setCurrentCardIndex(index);
-    setCurrentImageIndex(0);
+  const openModal = (cardIndex, imageIndex = 0) => {
+    setCurrentCardIndex(cardIndex);
+    setCurrentImageIndex(imageIndex);
     setIsModalOpen(true);
     setIsLoading(true);
     setProgress(0); 
@@ -497,18 +513,71 @@ const CampusLife = ({ previewCount, showViewMore }) => {
             </p>
           </div>
           
-          <div className={`grid ${previewCount ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-[repeat(auto-fill,minmax(280px,1fr))]'} gap-[25px] justify-center max-md:grid-cols-1`}>
-            {(previewCount ? finalCampusCards.slice(0, previewCount) : finalCampusCards).map((card, index) => (
-              <div 
-                className={`h-[250px] w-full text-center rounded-[12px] transition-all duration-300 relative overflow-hidden flex items-end justify-center p-[20px] bg-cover bg-center bg-no-repeat cursor-pointer before:content-[''] before:absolute before:bottom-0 before:left-0 before:right-0 before:h-[60%] before:bg-[linear-gradient(to_top,rgba(0,0,0,0.8),transparent)] before:z-[1] after:content-['Click_to_view_more'] after:absolute after:bottom-[10px] after:left-0 after:right-0 after:text-center after:text-white after:text-[0.8rem] after:opacity-0 after:translate-y-[10px] after:transition-all after:duration-300 after:z-[2] hover:-translate-y-[8px] hover:scale-105 hover:shadow-[0_15px_35px_rgba(0,0,0,0.6)] hover:z-10 hover:after:opacity-100 hover:after:translate-y-0 scroll-animation ${card.id}`}
-                key={index} 
-                id={card.id}
-                onClick={() => openModal(index)}
-                style={{ backgroundImage: `url(${card.images[0]})` }}
-              >
-                <h3 className="text-[1.3rem] color-white relative z-[2] m-0 text-shadow-[1px_1px_3px_rgba(0,0,0,0.8)] text-white">{card.title}</h3>
-              </div>
-            ))}
+          {/* Category Tabs - Only show on main Campus Life page */}
+          {!isPreview && (
+            <div className="flex flex-wrap justify-center gap-3 mb-10 max-h-[300px] overflow-y-auto p-4 custom-scrollbar">
+              {categories.map((cat, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-5 py-2.5 rounded-full font-medium transition-all duration-300 text-sm border-2 ${
+                    activeCategory === cat 
+                      ? 'bg-gradient-to-r from-[#fe0b00] to-red-600 text-white border-transparent shadow-[0_4px_15px_rgba(254,11,0,0.3)] scale-105' 
+                      : 'bg-white text-gray-700 border-gray-200 hover:border-red-300 hover:text-[#fe0b00] hover:bg-red-50'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
+          
+          {/* Images Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 justify-center">
+            {isPreview 
+              ? finalCampusCards.slice(0, previewCount).map((card, cIndex) => (
+                  <div 
+                    key={`preview-${card.id}`}
+                    className="h-[200px] md:h-[250px] w-full rounded-xl overflow-hidden relative cursor-pointer group shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                    onClick={() => openModal(cIndex, 0)}
+                  >
+                    <img 
+                      src={card.images[0]} 
+                      alt={card.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end justify-center p-4">
+                      <span className="text-white font-bold drop-shadow-md text-lg relative z-10 group-hover:-translate-y-1 transition-transform duration-300 text-center">
+                        {card.title}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              : finalCampusCards.map((card, cIndex) => {
+                  if (activeCategory !== 'All' && activeCategory !== card.title) return null;
+                  
+                  return card.images.map((imgUrl, iIndex) => (
+                    <div 
+                      key={`${card.id}-${iIndex}`}
+                      className="h-[200px] md:h-[250px] w-full rounded-xl overflow-hidden relative cursor-pointer group shadow-sm hover:shadow-xl transition-all duration-300"
+                      onClick={() => openModal(cIndex, iIndex)}
+                    >
+                      <img 
+                        src={imgUrl} 
+                        alt={card.altTexts[iIndex] || card.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span className="text-white font-medium drop-shadow-md translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                          {card.title}
+                        </span>
+                      </div>
+                    </div>
+                  ));
+                })
+            }
           </div>
 
           {showViewMore && (

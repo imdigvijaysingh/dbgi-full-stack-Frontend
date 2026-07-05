@@ -251,7 +251,7 @@ const Home = () => {
         primaryBtnText="Explore Programs"
         secondaryBtnText="Apply Now"
         onPrimaryClick={() => scrollToSection("programs")}
-        secondaryBtnLink="/pages/admission"
+        onSecondaryClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openAdmissionModal')); }}
         singleLineTitle={true}
       />
 

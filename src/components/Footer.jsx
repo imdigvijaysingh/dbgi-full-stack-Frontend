@@ -34,7 +34,7 @@ const Footer = ({ subscribed, scrollToSection, handleNewsletterSubmit }) => {
           <div className="footer-column [&>h3]:text-[1.3rem] [&>h3]:mb-[20px] [&>h3]:text-[var(--color-primary)] [&>a]:text-[#ccc] [&>a]:mb-[10px] [&>a]:block [&>a]:no-underline [&>a]:transition-all [&>a]:duration-300 hover:[&>a]:text-white hover:[&>a]:pl-[5px]">
             <h3>Quick Links</h3>
             {[
-              { pathName: "Admissions", path: "/pages/admission" },
+              { pathName: "Admissions", action: (e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openAdmissionModal')); } },
               { pathName: "Courses", path: "/pages/courses" },
               { pathName: "Academics", path: "/pages/academics" },
               { pathName: "Placements", path: "/pages/placements" },
@@ -43,9 +43,15 @@ const Footer = ({ subscribed, scrollToSection, handleNewsletterSubmit }) => {
               { pathName: "Career @DBGI", path: "/pages/career" },
               { pathName: "Admin Portal", path: "/admin/login" },
             ].map((link, index) => (
-              <Link key={index} to={link.path}>
-                {link.pathName}
-              </Link>
+              link.path ? (
+                <Link key={index} to={link.path}>
+                  {link.pathName}
+                </Link>
+              ) : (
+                <a key={index} href="#" onClick={link.action}>
+                  {link.pathName}
+                </a>
+              )
             ))}
           </div>
 

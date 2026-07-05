@@ -11,6 +11,7 @@ const Hero = ({
   secondaryBtnText,
   onPrimaryClick,
   secondaryBtnLink,
+  onSecondaryClick,
   singleLineTitle = false,
 }) => {
   return (
@@ -32,9 +33,10 @@ const Hero = ({
                 </Button>
               )}
 
-              {secondaryBtnText && secondaryBtnLink && (
+              {secondaryBtnText && (secondaryBtnLink || onSecondaryClick) && (
                 <Button
                   to={secondaryBtnLink}
+                  onClick={onSecondaryClick}
                   variant="outline"
                   className="max-md:w-full max-md:max-w-[250px] !bg-[#fe0b00] !border-[#fe0b00] !text-white hover:!bg-red-700 hover:!border-red-700 shadow-[0_4px_15px_rgba(254,11,0,0.3)]"
                   rel="noopener noreferrer"

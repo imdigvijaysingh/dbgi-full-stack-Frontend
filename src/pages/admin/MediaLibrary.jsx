@@ -12,6 +12,7 @@ const MediaLibrary = () => {
   // Upload States
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
+  const [uploadCategory, setUploadCategory] = useState('');
   const fileInputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -87,6 +88,9 @@ const MediaLibrary = () => {
     selectedFiles.forEach(file => {
       formData.append('media', file);
     });
+    if (uploadCategory.trim()) {
+      formData.append('category', uploadCategory.trim());
+    }
 
     try {
       const res = await api.post('/media/upload', formData, {
@@ -95,6 +99,7 @@ const MediaLibrary = () => {
       if (res.data.success) {
         showToast('Media uploaded successfully!', 'success');
         setSelectedFiles([]);
+        setUploadCategory('');
         setPreviews(prev => {
           prev.forEach(p => URL.revokeObjectURL(p.url));
           return [];
@@ -204,6 +209,18 @@ const MediaLibrary = () => {
                 ))}
               </div>
             )}
+
+            {/* Category Input */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Event Category (Optional)</label>
+              <input 
+                type="text" 
+                value={uploadCategory}
+                onChange={(e) => setUploadCategory(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#fe0b00] focus:ring-1 focus:ring-[#fe0b00] text-sm"
+                placeholder="e.g. Freshers Party 2024"
+              />
+            </div>
 
             <button 
               onClick={handleSubmit}

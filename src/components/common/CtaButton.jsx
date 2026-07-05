@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 const CtaButton = ({ 
   children = "Apply Now", 
-  to = "/pages/admission", 
   className = "",
   onClick,
   ...rest 
@@ -13,16 +12,14 @@ const CtaButton = ({
 
   const combinedClasses = `${baseClasses} ${ctaClasses} ${className}`;
 
-  if (to) {
-    return (
-      <Link to={to} className={combinedClasses} onClick={onClick} {...rest}>
-        {children}
-      </Link>
-    );
-  }
+  const handleOpenModal = (e) => {
+    e.preventDefault();
+    if(onClick) onClick(e);
+    window.dispatchEvent(new CustomEvent('openAdmissionModal'));
+  };
 
   return (
-    <button className={combinedClasses} onClick={onClick} {...rest}>
+    <button className={combinedClasses} onClick={handleOpenModal} {...rest}>
       {children}
     </button>
   );

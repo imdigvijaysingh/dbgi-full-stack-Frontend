@@ -36,7 +36,7 @@ const CourseDetails = () => {
               {course.description}
             </p>
             <div className="flex justify-center gap-4">
-              <Button to="/pages/admission/">Apply Now</Button>
+              <Button onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openAdmissionModal')); }}>Apply Now</Button>
               <Link to="/pages/courses" className="inline-block px-6 py-3 rounded text-white border-2 border-white font-bold hover:bg-white hover:text-black transition-all">
                 Browse All Courses
               </Link>
@@ -133,7 +133,7 @@ const CourseDetails = () => {
                   ))}
                 </ul>
 
-                <Button to="/pages/admission/" className="w-full text-center py-3 text-lg">
+                <Button onClick={(e) => { e.preventDefault(); window.dispatchEvent(new CustomEvent('openAdmissionModal')); }} className="w-full text-center py-3 text-lg">
                   Apply for Admission
                 </Button>
               </div>

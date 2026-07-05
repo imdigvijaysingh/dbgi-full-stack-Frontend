@@ -32,11 +32,13 @@ import ErpNotificationsManager from './pages/admin/ErpNotificationsManager'
 import ErpAssignmentsManager from './pages/admin/ErpAssignmentsManager'
 import ErpStudyMaterialsManager from './pages/admin/ErpStudyMaterialsManager'
 import ErpAttendanceManager from './pages/admin/ErpAttendanceManager'
+import AdmissionModal from './components/common/AdmissionModal'
 
 const App = () => {
   return (
     <div>
       <Toaster position="top-right" />
+      <AdmissionModal />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path='/' element={<Home />} />

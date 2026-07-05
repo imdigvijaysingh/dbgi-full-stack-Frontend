@@ -172,13 +172,17 @@ const Navbar = ({
                   </Link>
                 </li>
                 <li className="m-0 max-lg:w-full max-lg:border-b max-lg:border-white/20 max-lg:last:border-none">
-                  <Link
-                    to="/pages/admission"
+                  <a
+                    href="#"
                     className="text-white no-underline font-semibold transition-all duration-300 px-2.5 py-1.5 whitespace-nowrap text-sm rounded relative hover:text-blue-600 hover:bg-white/10 max-xl:text-xs max-xl:px-2 max-lg:block max-lg:w-full max-lg:py-3 max-lg:px-4 max-lg:text-base max-md:py-4 max-md:px-5 max-md:text-lg"
-                    onClick={() => mobileMenuOpen && setMobileMenuOpen(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (mobileMenuOpen) setMobileMenuOpen(false);
+                      window.dispatchEvent(new CustomEvent('openAdmissionModal'));
+                    }}
                   >
                     Admissions
-                  </Link>
+                  </a>
                 </li>
                 <li className="m-0 max-lg:w-full max-lg:border-b max-lg:border-white/20 max-lg:last:border-none">
                   <Link
