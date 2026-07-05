@@ -2,7 +2,7 @@ import React from 'react';
 
 const GlobalLoader = ({ message = 'Loading...' }) => {
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white/40 backdrop-blur-sm animate-[modalFadeIn_0.2s_ease]">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/20 backdrop-blur-sm animate-[modalFadeIn_0.2s_ease]">
       <div className="bg-white px-8 py-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col items-center gap-4">
         {/* Spinner */}
         <div className="relative w-12 h-12">

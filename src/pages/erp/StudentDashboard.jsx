@@ -88,17 +88,30 @@ const StudentDashboard = () => {
       name: profile.name,
       email: profile.email,
       phone: profile.phone,
-      address: profile.address || ''
+      address: profile.address || '',
+      password: '',
+      confirmPassword: ''
     });
     setIsEditingProfile(true);
   };
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+    if (editFormData.password && editFormData.password !== editFormData.confirmPassword) {
+      return showToast('Passwords do not match', 'error');
+    }
+    
     try {
       setSavingProfile(true);
       const token = localStorage.getItem('studentToken');
-      const { data } = await axios.put('/api/v1/students/me', editFormData, {
+      
+      const payload = { ...editFormData };
+      if (!payload.password) {
+        delete payload.password;
+        delete payload.confirmPassword;
+      }
+      
+      const { data } = await axios.put('/api/v1/students/me', payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile(data);
@@ -198,6 +211,21 @@ const StudentDashboard = () => {
                 <label className="block text-sm font-medium text-gray-700">Address</label>
                 <textarea name="address" value={editFormData.address} onChange={handleInputChange} rows="2" className="mt-1 w-full px-3 py-2 border rounded focus:ring-blue-500 focus:border-blue-500 text-sm"></textarea>
               </div>
+              
+              <div className="pt-4 border-t border-gray-100">
+                <h3 className="text-sm font-bold text-gray-800 mb-3">Change Password (Optional)</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">New Password</label>
+                    <input type="password" name="password" value={editFormData.password} onChange={handleInputChange} className="mt-1 w-full px-3 py-2 border rounded focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Leave blank to keep current" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                    <input type="password" name="confirmPassword" value={editFormData.confirmPassword} onChange={handleInputChange} className="mt-1 w-full px-3 py-2 border rounded focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Confirm new password" />
+                  </div>
+                </div>
+              </div>
+
               <div className="flex gap-2 pt-2">
                 <button type="button" onClick={() => setIsEditingProfile(false)} className="flex-1 py-1.5 border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50 transition">Cancel</button>
                 <button type="submit" disabled={savingProfile} className="flex-1 py-1.5 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition">{savingProfile ? 'Saving...' : 'Save'}</button>

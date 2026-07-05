@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Toast from '../../components/common/Toast';
+import GlobalLoader from '../../components/common/GlobalLoader';
 
 const StudentLogin = () => {
   const [studentId, setStudentId] = useState(import.meta.env.DEV ? 'ds123' : '');
   const [password, setPassword] = useState(import.meta.env.DEV ? 'pass123' : '');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
@@ -65,13 +67,20 @@ const StudentLogin = () => {
                     <i className="fas fa-lock text-gray-400"></i>
                   </div>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md py-2 border"
+                    className="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 pr-10 sm:text-sm border-gray-300 rounded-md py-2 border"
                     placeholder="Enter your password"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-blue-500"
+                  >
+                    <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                  </button>
                 </div>
               </div>
 
@@ -108,6 +117,8 @@ const StudentLogin = () => {
           onClose={() => setToast(null)} 
         />
       )}
+      
+      {loading && <GlobalLoader message="Logging in..." />}
     </div>
   );
 };
